@@ -9,24 +9,21 @@
 def make_exe():
     dist = default_python_distribution()
     policy = dist.make_python_packaging_policy()
-    policy.extension_module_filter = "all"
-    policy.include_distribution_sources = True
-    policy.include_distribution_resources = False
-    policy.include_test = False
-    # policy.resources_location = "in-memory"
-    # policy.resources_location_fallback = "filesystem-relative:lib"
-    policy.resources_location = "filesystem-relative:lib"
-    config = dist.make_python_interpreter_config()
-    
-    # config.run_command = "from myapp import main; main()"
+    policy.set_resource_handling_mode("files")
+    policy.resources_location_fallback = "filesystem-relative:lib"
+
+    python_config = dist.make_python_interpreter_config()
+    python_config.module_search_paths = ["$ORIGIN/lib"]
 
     exe = dist.to_python_executable(
-        name="myapp",
-        packaging_policy=policy,
-        config=config,
+        name = "numpy",
+        packaging_policy = policy,
+        config = python_config,
     )
 
-    exe.add_python_resources(exe.pip_install(["pyvista"]))
+    for resource in exe.pip_download(["numpy"]):
+        resource.add_location = "filesystem-relative:lib"
+        exe.add_python_resource(resource)
 
     return exe
 
