@@ -21,7 +21,7 @@ def make_exe():
         config = python_config,
     )
 
-    for resource in exe.pip_download(["numpy"]):
+    for resource in exe.pip_download(["pyvista"]):
         resource.add_location = "filesystem-relative:lib"
         exe.add_python_resource(resource)
 
