@@ -7,7 +7,7 @@
 # This function creates a Python executable and installs it in a destination
 # directory.
 def make_exe():
-    dist = default_python_distribution()
+    dist = default_python_distribution(python_version="3.9")
     policy = dist.make_python_packaging_policy()
     policy.set_resource_handling_mode("files")
     policy.resources_location_fallback = "filesystem-relative:lib"
@@ -16,12 +16,12 @@ def make_exe():
     python_config.module_search_paths = ["$ORIGIN/lib"]
 
     exe = dist.to_python_executable(
-        name = "numpy",
+        name = "python-with-ngsolve",
         packaging_policy = policy,
         config = python_config,
     )
 
-    for resource in exe.pip_download(["pyvista"]):
+    for resource in exe.pip_download(["pyvista", "ngsolve"]):
         resource.add_location = "filesystem-relative:lib"
         exe.add_python_resource(resource)
 
