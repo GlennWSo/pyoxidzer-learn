@@ -13,7 +13,10 @@ def make_exe():
     policy.resources_location_fallback = "filesystem-relative:lib"
 
     python_config = dist.make_python_interpreter_config()
-    python_config.module_search_paths = ["$ORIGIN/lib"]
+
+    python_config.module_search_paths = ["$ORIGIN/lib", "$ORIGIN/lib/python3.9/site-packages"]
+
+
 
     exe = dist.to_python_executable(
         name = "python-with-ngsolve",
@@ -22,7 +25,7 @@ def make_exe():
     )
 
     for resource in exe.pip_download(["pyvista", "ngsolve"]):
-        resource.add_location = "filesystem-relative:lib"
+        resource.add_location = "filesystem-relative:lib/python3.9/site-packages"
         exe.add_python_resource(resource)
 
     return exe
