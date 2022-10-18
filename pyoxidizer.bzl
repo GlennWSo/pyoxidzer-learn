@@ -7,7 +7,7 @@
 # This function creates a Python executable and installs it in a destination
 # directory.
 def make_exe():
-    dist = default_python_distribution(python_version="3.10")
+    dist = default_python_distribution(python_version="3.9")
     policy = dist.make_python_packaging_policy()
     policy.set_resource_handling_mode("files")
     policy.resources_location_fallback = "filesystem-relative:lib"
@@ -24,11 +24,24 @@ def make_exe():
         config = python_config,
     )
 
+    print("hello")
+    src_path = "/home/gws/projects/pyoxidzer-learn/step"
+    print(src_path)
+
+    my_src = exe.pip_install([src_path])
+    print(my_src)
+    
+    for resource in my_src:
+        resource.add_location = "filesystem-relative:lib"
+        exe.add_python_resource(resource)
+
     for resource in exe.pip_download(["pyvista", "ngsolve"]):
         resource.add_location = "filesystem-relative:lib/python3.9/site-packages"
         exe.add_python_resource(resource)
+    
 
     return exe
+
 
 def make_embedded_resources(exe):
     return exe.to_embedded_resources()
