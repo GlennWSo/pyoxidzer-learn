@@ -7,16 +7,13 @@
 # This function creates a Python executable and installs it in a destination
 # directory.
 def make_exe():
-    dist = default_python_distribution(python_version="3.10")
+    dist = default_python_distribution(python_version="3.9")
     policy = dist.make_python_packaging_policy()
     policy.set_resource_handling_mode("files")
     policy.resources_location_fallback = "filesystem-relative:lib"
 
     python_config = dist.make_python_interpreter_config()
-
     python_config.module_search_paths = ["$ORIGIN/lib", "$ORIGIN/lib/python3.9/site-packages"]
-
-
 
     exe = dist.to_python_executable(
         name = "python-with-ngsolve",
@@ -24,11 +21,18 @@ def make_exe():
         config = python_config,
     )
 
+    # import my src
+    for resource in exe.pip_install(["./step"]):
+        resource.add_location = "filesystem-relative:lib"
+        exe.add_python_resource(resource)
+
+    # import pypi deps
     for resource in exe.pip_download(["pyvista", "ngsolve"]):
         resource.add_location = "filesystem-relative:lib/python3.9/site-packages"
         exe.add_python_resource(resource)
 
     return exe
+
 
 def make_embedded_resources(exe):
     return exe.to_embedded_resources()
