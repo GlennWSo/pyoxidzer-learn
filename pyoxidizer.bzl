@@ -13,10 +13,7 @@ def make_exe():
     policy.resources_location_fallback = "filesystem-relative:lib"
 
     python_config = dist.make_python_interpreter_config()
-
     python_config.module_search_paths = ["$ORIGIN/lib", "$ORIGIN/lib/python3.9/site-packages"]
-
-
 
     exe = dist.to_python_executable(
         name = "python-with-ngsolve",
@@ -24,21 +21,15 @@ def make_exe():
         config = python_config,
     )
 
-    print("hello")
-    src_path = "/home/gws/projects/pyoxidzer-learn/step"
-    print(src_path)
-
-    my_src = exe.pip_install([src_path])
-    print(my_src)
-    
-    for resource in my_src:
+    # import my src
+    for resource in exe.pip_install(["./step"]):
         resource.add_location = "filesystem-relative:lib"
         exe.add_python_resource(resource)
 
+    # import pypi deps
     for resource in exe.pip_download(["pyvista", "ngsolve"]):
         resource.add_location = "filesystem-relative:lib/python3.9/site-packages"
         exe.add_python_resource(resource)
-    
 
     return exe
 
